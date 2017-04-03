@@ -44,3 +44,36 @@ c <- ggplot(data = file_interval, aes(interval,steps_per_day))
 plot_series_interval <- c + geom_smooth()
 
 ordered_interval_file <- file_interval[with(file_interval,order(-steps_per_day)),]
+
+
+############### Second part
+
+na_values <- table(is.na(file$steps))
+percentage_of_nas <- (na_values[[2]]/ length(file$steps))*100
+
+
+#### missing value data base
+file_interval <- mutate(file_interval, steps_rounded = round(mean_steps))
+
+i <- 1
+list <- list()
+a <- c(1: na_values[[2]])
+steps <- file$steps
+interval <-  file$interval
+steps_means <- file_interval$steps_rounded
+interval_means <- file_interval$interval
+
+
+
+for( x in steps){
+  if(is.na(steps[i])){
+    list[i] <- which(interval_means %in% interval[i] )
+    
+   # file$steps[i] <- 
+    
+  }
+  
+  i <- i + 1
+  
+}
+
