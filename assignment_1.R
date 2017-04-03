@@ -5,7 +5,7 @@ library(ggplot2)
 
 file <- read.csv("activity.csv")
 
-
+file_with_no_na <- file
 #######################
 #############  File Structure ############
 
@@ -67,13 +67,16 @@ interval_means <- file_interval$interval
 
 for( x in steps){
   if(is.na(steps[i])){
-    list[i] <- which(interval_means %in% interval[i] )
-    
-   # file$steps[i] <- 
+
+    file_with_no_na$steps[i] <- steps_means[which(interval_means  %in% interval[i])]
     
   }
   
   i <- i + 1
-  
+
 }
 
+# 
+ z <- ggplot(file_with_no_na,aes(steps)) + geom_histogram(binwidth = 55)
+total_step_mean <- mean(file_with_no_na$steps)
+total_step_median <- median(file_with_no_na$steps)
