@@ -1,0 +1,111 @@
+---
+title: "reproducible_research_p1"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(dplyr)
+library(ggplot2)
+file <- read.csv("activity.csv")
+
+file_with_no_na <- file
+```
+
+## Loading Processed data
+
+```{r loading, include= TRUE}
+
+library(dplyr)
+library(ggplot2)
+file <- read.csv("activity.csv")
+file_with_no_na <- file
+
+file_dates <-  group_by(file,date) %>% summarise(steps_per_day = sum(steps), mean_steps = mean(steps), median_steps = median(steps, na.rm = TRUE))
+
+
+```
+
+## Mean of uncleaned data
+
+```{r mean, echo=TRUE}
+mean_steps <- mean(file_dates$steps_per_day,na.rm = TRUE)
+median_steps_total <- median(file_dates$steps_per_day, na.rm = TRUE)
+
+mean_steps
+median_steps_total
+```
+
+## Daily average pattern
+```{r daily_plot, echo=TRUE}
+file_interval <-  group_by(file,interval) %>% summarise(steps_per_day = sum(steps, na.rm = TRUE), mean_steps = mean(steps,na.rm = TRUE), median_steps = median(steps, na.rm = TRUE))
+c <- ggplot(data = file_interval, aes(interval,steps_per_day))
+plot_series_interval <- c + geom_smooth()
+
+
+plot_series_interval
+
+```
+
+## Missing Values
+```{r missing, echo=TRUE}
+na_values <- table(is.na(file$steps))
+percentage_of_nas <- (na_values[[2]]/ length(file$steps))*100
+file_interval <- mutate(file_interval, steps_rounded = round(mean_steps))
+
+i <- 1
+list <- list()
+a <- c(1: na_values[[2]])
+steps <- file$steps
+interval <-  file$interval
+steps_means <- file_interval$steps_rounded
+interval_means <- file_interval$interval
+
+
+
+for( x in steps){
+  if(is.na(steps[i])){
+
+    file_with_no_na$steps[i] <- steps_means[which(interval_means  %in% interval[i])]
+    
+  }
+  
+  i <- i + 1
+
+}
+
+
+na_values <- table(is.na(file$steps))
+na_values
+
+percentage_of_nas <- (na_values[[2]]/ length(file$steps))*100
+percentage_of_nas
+
+total_step_mean <- mean(file_with_no_na$steps)
+total_step_mean
+
+total_step_median <- median(file_with_no_na$steps)
+total_step_median
+```
+
+## Histogram
+
+```{r hist, echo=TRUE}
+ z <- ggplot(file_with_no_na,aes(steps)) + geom_histogram(binwidth = 55)
+ z 
+```
+
+
+## Histogram
+
+```{r weekday, echo=TRUE}
+file_with_no_na$day  <- weekdays(as.Date(file_with_no_na$date))
+file_with_no_na_weekday <- mutate(file_with_no_na, weekday = ifelse(day %in% c("Saturday","Sunday"),"Weekend", "Weekday"))
+
+w <- ggplot(file_with_no_na_weekday, aes(interval,steps)) + geom_line()
+
+plot_weekdays <- w  + facet_grid(weekday ~ .)
+plot_weekdays
+```
+
+
