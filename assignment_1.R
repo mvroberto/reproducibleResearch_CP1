@@ -80,3 +80,15 @@ for( x in steps){
  z <- ggplot(file_with_no_na,aes(steps)) + geom_histogram(binwidth = 55)
 total_step_mean <- mean(file_with_no_na$steps)
 total_step_median <- median(file_with_no_na$steps)
+file_interval_summed <-  group_by(file_with_no_na,date) %>% summarise(steps_per_day = sum(steps), mean_steps = mean(steps), median_steps = median(steps, na.rm = TRUE))
+
+
+####
+## weekdays
+
+file_with_no_na$day  <- weekdays(as.Date(file_with_no_na$date))
+file_with_no_na_weekday <- mutate(file_with_no_na, weekday = ifelse(day %in% c("Saturday","Sunday"),"Weekend", "Weekday"))
+
+w <- ggplot(file_with_no_na_weekday, aes(interval,steps)) + geom_line()
+
+plot_weekdays <- w  + facet_grid(weekday ~ .)
