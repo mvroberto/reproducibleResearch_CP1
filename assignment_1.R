@@ -32,6 +32,7 @@ file_dates <-  group_by(file,date) %>% summarise(steps_per_day = sum(steps), mea
 
 a_sum_steps <- ggplot(file_dates,aes(date,steps_per_day))
 b_mean_steps <- ggplot(file_dates,aes(date,mean_steps))
+mean_steps <- mean(file_dates$steps_per_day, na.rm = TRUE)
 median_steps_total <- median(file_dates$steps_per_day, na.rm = TRUE)
 
 
