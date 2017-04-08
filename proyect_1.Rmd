@@ -96,7 +96,9 @@ total_step_median
 ```
 
 
-## Histogram
+## Weekday, Weekend Graph
+
+I used a
 
 ```{r weekday, echo=TRUE}
 file_with_no_na$day  <- weekdays(as.Date(file_with_no_na$date))
