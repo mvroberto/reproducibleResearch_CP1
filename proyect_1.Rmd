@@ -7,6 +7,7 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 library(dplyr)
 library(ggplot2)
+library(knitr)
 file <- read.csv("activity.csv")
 
 file_with_no_na <- file
@@ -26,7 +27,23 @@ file_dates <-  group_by(file,date) %>% summarise(steps_per_day = sum(steps), mea
 
 ```
 
-## Mean of uncleaned data
+## Calculate total number of steps taken per day
+
+```{r tota_steps, echo=TRUE}
+file_dates$date <- as.Date(file_dates$date)
+file_dates
+```
+
+##  Make a histogram of the total number of steps taken each day
+
+```{r steps_hist, echo=TRUE}
+file_dates$date <- as.Date(file_dates$date)
+x <- ggplot(file_dates, aes(steps_per_day))
+plot_hist <- x + geom_histogram()
+plot_hist
+```
+
+## Mean and Median of uncleaned data
 
 ```{r mean, echo=TRUE}
 mean_steps <- mean(file_dates$steps_per_day,na.rm = TRUE)
@@ -37,7 +54,7 @@ median_steps_total
 ```
 
 ## Daily average pattern
-```{r daily_plot, echo=TRUE}
+```{r daily_plot, echo=TRUE, }
 file_interval <-  group_by(file,interval) %>% summarise(steps_per_day = sum(steps, na.rm = TRUE), mean_steps = mean(steps,na.rm = TRUE), median_steps = median(steps, na.rm = TRUE))
 c <- ggplot(data = file_interval, aes(interval,steps_per_day))
 plot_series_interval <- c + geom_smooth()
@@ -47,7 +64,20 @@ plot_series_interval
 
 ```
 
+## Which 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps?
+
+``` {r file_min_intervak, echo=TRUE }
+a <- max(file_interval$steps_per_day)
+index <- which( file_interval$steps_per_day %in% a )
+max_interval = file_interval$interval[index]
+max_interval
+
+```
+
+
 ## Missing Values
+
+I used the average of each interval to fill missing values
 ```{r missing, echo=TRUE}
 na_values <- table(is.na(file$steps))
 percentage_of_nas <- (na_values[[2]]/ length(file$steps))*100
@@ -91,14 +121,16 @@ total_step_median
 ## Histogram
 
 ```{r hist, echo=TRUE}
- z <- ggplot(file_with_no_na,aes(steps)) + geom_histogram(binwidth = 55)
+file_dates_no_nas <-  group_by(file_with_no_na,date) %>% summarise(steps_per_day = sum(steps), mean_steps = mean(steps), median_steps = median(steps, na.rm = TRUE))
+file_dates_no_nas$date <- as.Date(file_dates_no_nas$date)
+ z <- ggplot(file_dates_no_nas,aes(steps_per_day)) + geom_histogram()
  z 
 ```
 
 
 ## Weekday, Weekend Graph
 
-I used a
+I used dplyr ifelse and GGPLOT to creat this graph.
 
 ```{r weekday, echo=TRUE}
 file_with_no_na$day  <- weekdays(as.Date(file_with_no_na$date))

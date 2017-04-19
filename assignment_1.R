@@ -1,6 +1,7 @@
 
 library(dplyr)
 library(ggplot2)
+library(knitr)
 ###########Read file
 
 file <- read.csv("activity.csv")
@@ -19,9 +20,9 @@ file_with_no_na <- file
 # 1] "steps"    "date"     "interval"
 
 #####NAS
- ## Steps : 2304
- ## date: 0
- ## interval: 0
+## Steps : 2304
+## date: 0
+## interval: 0
 
 ############ Non below 0
 
@@ -68,17 +69,17 @@ interval_means <- file_interval$interval
 
 for( x in steps){
   if(is.na(steps[i])){
-
+    
     file_with_no_na$steps[i] <- steps_means[which(interval_means  %in% interval[i])]
     
   }
   
   i <- i + 1
-
+  
 }
 
 # 
- z <- ggplot(file_with_no_na,aes(steps)) + geom_histogram(binwidth = 55)
+z <- ggplot(file_with_no_na,aes(steps)) + geom_histogram(binwidth = 55)
 total_step_mean <- mean(file_with_no_na$steps)
 total_step_median <- median(file_with_no_na$steps)
 file_interval_summed <-  group_by(file_with_no_na,date) %>% summarise(steps_per_day = sum(steps), mean_steps = mean(steps), median_steps = median(steps, na.rm = TRUE))
@@ -93,3 +94,7 @@ file_with_no_na_weekday <- mutate(file_with_no_na, weekday = ifelse(day %in% c("
 w <- ggplot(file_with_no_na_weekday, aes(interval,steps)) + geom_line()
 
 plot_weekdays <- w  + facet_grid(weekday ~ .)
+
+file_dates$date <- as.Date(file_dates$date)
+x <- ggplot(file_dates, aes(steps_per_day))
+plot_hist <- x + geom_histogram()
